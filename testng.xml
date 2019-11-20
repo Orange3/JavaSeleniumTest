@@ -1,0 +1,7 @@
+<suite name="TestSuite">
+    <test name="AutoQA">
+        <classes>
+            <class name="test.TestClass"/>
+        </classes>
+    </test>
+</suite>
