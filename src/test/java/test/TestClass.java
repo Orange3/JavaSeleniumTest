@@ -39,21 +39,26 @@ public class TestClass {
         formResponsePage = new FormResponsePage(driver);
     }
 
+    @BeforeTest
+    public void beforeTest(){
+        resetFields();
+    }
+
     @Test(description = "Check email form for a correctness of an entered data", groups = "form", priority = 1)
     public void emailFieldTest() {
         //Check that error message doesn't appear with valid data
         formPage.enterEmail("user_name@domain.com");
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed(), false);
 
         formPage.enterEmail("username@yahoo.corporate.in");
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed(), false);
 
         //Check that error message appears with invalid data
         formPage.enterEmail("username@yahoo..com");
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed(), true);
 
         formPage.enterEmail(".username@yahoo.com");
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed()); //test will be failed. Message should be displayed but it isn't
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed(), true); //test will be failed. Message should be displayed but it isn't
     }
 
     @Test(description = "Check age form for a correctness of an entered data", groups = "form", priority = 2)
@@ -62,91 +67,96 @@ public class TestClass {
         //only numbers are acceptable, age should starts from 19XX and ends with 20XX, month <12, days<31
         String month = "12", day = "30", year = "2000";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(year+"-"+month+"-"+day, formPage.getSetAge());
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed());
+        Assert.assertEquals(year+"-"+month+"-"+day, formPage.getAgeFieldEnteredData());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), false);
 
         month = "3"; day = "30"; year = "1972";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(year+"-0"+month+"-"+day, formPage.getSetAge());
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed());
+        Assert.assertEquals(year+"-0"+month+"-"+day, formPage.getAgeFieldEnteredData());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), false);
 
         //Check that error message appears with invalid data
         month = "13"; day = "18"; year="1953";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(year+"-"+12+"-"+day, formPage.getSetAge());
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed());
+        Assert.assertEquals(year+"-"+12+"-"+day, formPage.getAgeFieldEnteredData());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), false);
 
         month = "2"; day = "30"; year="1999";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed()); //test will be failed. Incorrect date is present. Error Message should be displayed but it isn't
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), true); //test will be failed. Incorrect date is present. Error Message should be displayed but it isn't
 
         month = "31"; day="12"; year="012345";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed()); //test will be failed. Incorrect date is present. Error Message should be displayed but it isn't
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(),true); //test will be failed. Incorrect date is present. Error Message should be displayed but it isn't
 
         month = "as"; day="ds"; year="012345";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed()); //test will be failed. Incorrect date is present. Error Message should be displayed but it isn't
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), true); //test will be failed. Incorrect date is present. Error Message should be displayed but it isn't
     }
 
     @Test(description = "Check name form for a correctness of an entered data", groups = "form", priority = 3)
     public void nameFieldTest(){
         //Check name field for valid data. It shouldn't include special symbols. Text length should be less than 20
         formPage.enterYourNameField("Arley Gilmore");
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed(), false);
 
         formPage.enterYourNameField("Cairro Worthington"); //string.length = 18
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed()); //test will be failed. Incorrect message length is set.
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed(), false); //test will be failed. Incorrect message length is set.
 
         //Check invalid data
         formPage.enterYourNameField("Hubert Blaine Wolfeschlegelsteinhausenbergerdorff");
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed(), true);
 
         formPage.enterYourNameField("");
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed(), true);
 
         formPage.enterYourNameField("123#$%asd");
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed()); //test is failed. Special symbols are not detected.
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed(), true); //test is failed. Special symbols are not detected.
     }
 
-    @Test(description = "Verify a correctness of checked options in the mood form", groups = "form", priority = 4)
+    @Test(description = "Verify a correctness of checked options in the Mood form", groups = "form", priority = 4)
     public void moodFieldsTest(){
         //Valid data
         //Check 1 selected option; Error message shouldn't be displayed
         formPage.getCheckBoxesList().get(0).click();
         Assert.assertEquals(formPage.countCheckedOptions(formPage.getCheckBoxesList()), 1);
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed());
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed(), false);
 
         formPage.resetCheckBoxes(formPage.getCheckBoxesList());
 
         //Check "another" selected option and empty text field. Error message should be displayed
         formPage.getCheckBoxesList().get(4).click();
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed());
+        Assert.assertEquals( formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed(), true);
+        Assert.assertEquals(formPage.countCheckedOptions(formPage.getCheckBoxesList()), 1);
+
         //Check filled text-form and error message
         formPage.enterTextIntoMoodOtherOption("Great!");
-        Assert.assertEquals(false, formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed());
+        Assert.assertEquals(formPage.countCheckedOptions(formPage.getCheckBoxesList()), 1);
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed(), false);
 
         //Invalid data
-        //Check appearance of error for not selected options
+        //Check appearance of error for non selected options
         formPage.resetCheckBoxes(formPage.getCheckBoxesList());
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed());
+        Assert.assertEquals(formPage.countCheckedOptions(formPage.getCheckBoxesList()), 0);
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed(), true);
 
         //Check several selected options
         formPage.getCheckBoxesList().get(1).click();
         formPage.getCheckBoxesList().get(3).click();
-        //Test will be failed. Error message is not displayed. Data can be sent. Radio button should be used instead of checkboxes
-        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed());
+        Assert.assertEquals(formPage.countCheckedOptions(formPage.getCheckBoxesList()), 2);
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed(), true);//Test will be failed. Error message isn't displayed.
+                                                                                                            // Data can be sent. Radio button should be used instead of checkboxes
     }
 
     @Test(description = "Verify that a data can be sent", groups = "form", priority = 5)
     public void submitDataTest(){
         //Submit with empty data
-//        driver.get("https://goo.gl/forms/t16Uov7ZHXCrB2ZE2");
-//        formPage.clickSubmit();
-//        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed());
-//        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed());
-//        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed());
-//        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed());
+        driver.get("https://goo.gl/forms/t16Uov7ZHXCrB2ZE2");
+        formPage.clickSubmit();
+        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed());
+        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed());
+        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed());
+        Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.MOOD).isDisplayed());
 
         //Submit with valid data
         formPage.enterEmail("user_name@domain.com");
@@ -154,8 +164,13 @@ public class TestClass {
         formPage.enterYourNameField("Arley Gilmore");
         formPage.getCheckBoxesList().get(0).click();
         formPage.clickSubmit();
-        wait.until(ExpectedConditions.visibilityOf(formResponsePage.getSendAgainLink()));
 
+        wait.until(ExpectedConditions.visibilityOf(formResponsePage.getConfirmMessage()));
+
+        //Check sent one more form
+        Assert.assertEquals(formResponsePage.getSentOneMoreLink().isDisplayed(), true);
+        formResponsePage.getSentOneMoreLink().click();
+        Assert.assertEquals(formPage.getEmailField().isDisplayed(), true);
     }
 
     @AfterClass
@@ -164,6 +179,12 @@ public class TestClass {
         driver.quit();
     }
 
-
+    public void resetFields(){
+        formPage.resetCheckBoxes(formPage.getCheckBoxesList());
+        formPage.getAgeField().clear();
+        formPage.getEmailField().clear();
+        formPage.getYourNameField().clear();
+        formPage.getMoodOtherOptionField().clear();
+    }
 }
 

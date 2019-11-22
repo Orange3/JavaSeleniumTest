@@ -1,5 +1,6 @@
 package pages;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -55,7 +56,7 @@ public class FormPage {
     //filling age field
     public void enterAge(String month, String day, String year){
         ageField.click();
-        ageField.click();
+        ageField.sendKeys(Keys.HOME);
         ageField.clear();
         ageField.sendKeys(month);
         ageField.sendKeys(day);
@@ -64,7 +65,7 @@ public class FormPage {
     }
 
     //return value from age field
-    public String getSetAge(){
+    public String getAgeFieldEnteredData(){
         return ageField.getAttribute("data-initial-value");
     }
 
@@ -121,4 +122,25 @@ public class FormPage {
             default: return null;
         }
     }
+
+    public WebElement getTitleField() {
+        return titleField;
+    }
+
+    public WebElement getEmailField() {
+        return emailField;
+    }
+
+    public WebElement getAgeField() {
+        return ageField;
+    }
+
+    public WebElement getYourNameField() {
+        return yourNameField;
+    }
+
+    public WebElement getMoodOtherOptionField() {
+        return moodOtherOptionField;
+    }
+
 }
