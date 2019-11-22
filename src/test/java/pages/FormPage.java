@@ -112,7 +112,7 @@ public class FormPage {
     public void clickSubmit(){
         submitButton.click();
     }
-    //Return of error message for specified field
+    //Return error message for specified field
     public WebElement getErrorMessage(FormType field){
         switch (field){
             case EMAIL: return errorMessages.get(0);
