@@ -1,5 +1,6 @@
 package test;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
@@ -14,7 +15,6 @@ import pages.FormResponsePage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
 
 public class TestClass {
     private static ChromeDriverService service;
@@ -32,20 +32,16 @@ public class TestClass {
         service.start();
         driver = new ChromeDriver(service);
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         wait = new WebDriverWait(driver, 10);
         driver.get("https://goo.gl/forms/t16Uov7ZHXCrB2ZE2");
         formPage = new FormPage(driver);
         formResponsePage = new FormResponsePage(driver);
     }
 
-    @BeforeTest
-    public void beforeTest(){
-        resetFields();
-    }
-
-    @Test(description = "Check email form for a correctness of an entered data", groups = "form", priority = 1)
+    @Test(description = "Check Email form for a correctness of an entered data", groups = "form", priority = 1)
     public void emailFieldTest() {
+        resetFields();
         //Check that error message doesn't appear with valid data
         formPage.enterEmail("user_name@domain.com");
         Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed(), false);
@@ -59,10 +55,12 @@ public class TestClass {
 
         formPage.enterEmail(".username@yahoo.com");
         Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed(), true); //test will be failed. Message should be displayed but it isn't
+        resetFields();
     }
 
-    @Test(description = "Check age form for a correctness of an entered data", groups = "form", priority = 2)
-    public void ageFieldTest() {
+    @Test(description = "Check Age form for a correctness of an entered data", groups = "form", priority = 2)
+    public void ageFieldTest() throws InterruptedException {
+        resetFields();
         //Check that error message doesn't appear with valid data. Valid data should satisfy conditions:
         //only numbers are acceptable, age should starts from 19XX and ends with 20XX, month <12, days<31
         String month = "12", day = "30", year = "2000";
@@ -72,13 +70,13 @@ public class TestClass {
 
         month = "3"; day = "30"; year = "1972";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(year+"-0"+month+"-"+day, formPage.getAgeFieldEnteredData());
+        Assert.assertEquals(formPage.getAgeFieldEnteredData(),year+"-0"+month+"-"+day);
         Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), false);
 
         //Check that error message appears with invalid data
         month = "13"; day = "18"; year="1953";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(year+"-"+12+"-"+day, formPage.getAgeFieldEnteredData());
+        Assert.assertEquals(formPage.getAgeFieldEnteredData(),year+"-"+12+"-"+day);
         Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), false);
 
         month = "2"; day = "30"; year="1999";
@@ -91,11 +89,12 @@ public class TestClass {
 
         month = "as"; day="ds"; year="012345";
         formPage.enterAge(month,day,year);
-        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), true); //test will be failed. Incorrect date is present. Error Message should be displayed but it isn't
+        Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed(), true);
     }
 
     @Test(description = "Check name form for a correctness of an entered data", groups = "form", priority = 3)
     public void nameFieldTest(){
+        resetFields();
         //Check name field for valid data. It shouldn't include special symbols. Text length should be less than 20
         formPage.enterYourNameField("Arley Gilmore");
         Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed(), false);
@@ -116,6 +115,7 @@ public class TestClass {
 
     @Test(description = "Verify a correctness of checked options in the Mood form", groups = "form", priority = 4)
     public void moodFieldsTest(){
+        resetFields();
         //Valid data
         //Check 1 selected option; Error message shouldn't be displayed
         formPage.getCheckBoxesList().get(0).click();
@@ -149,9 +149,9 @@ public class TestClass {
     }
 
     @Test(description = "Verify that a data can be sent", groups = "form", priority = 5)
-    public void submitDataTest(){
+    public void submitDataTest() throws InterruptedException {
+        resetFields();
         //Submit with empty data
-        driver.get("https://goo.gl/forms/t16Uov7ZHXCrB2ZE2");
         formPage.clickSubmit();
         Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed());
         Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.AGE).isDisplayed());
@@ -181,7 +181,9 @@ public class TestClass {
 
     public void resetFields(){
         formPage.resetCheckBoxes(formPage.getCheckBoxesList());
-        formPage.getAgeField().clear();
+        formPage.getAgeField().sendKeys(Keys.DELETE,
+                Keys.ARROW_RIGHT, Keys.DELETE,
+                Keys.ARROW_RIGHT, Keys.DELETE);
         formPage.getEmailField().clear();
         formPage.getYourNameField().clear();
         formPage.getMoodOtherOptionField().clear();

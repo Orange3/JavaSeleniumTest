@@ -8,7 +8,6 @@ import org.openqa.selenium.support.PageFactory;
 
 import java.util.List;
 
-
 public class FormPage {
     WebDriver driver;
 
@@ -54,12 +53,19 @@ public class FormPage {
     }
 
     //filling age field
-    public void enterAge(String month, String day, String year){
+    public void enterAge(String month, String day, String year) throws InterruptedException {
         ageField.click();
-        ageField.sendKeys(Keys.HOME);
-        ageField.clear();
+        //ageField.sendKeys(Keys.HOME);
+        //ageField.clear();
+        ageField.sendKeys(Keys.DELETE,
+                Keys.ARROW_RIGHT, Keys.DELETE,
+                Keys.ARROW_RIGHT, Keys.DELETE);
+        ageField.sendKeys(Keys.ARROW_LEFT, Keys.ARROW_LEFT);
+        Thread.sleep(10);
         ageField.sendKeys(month);
+        Thread.sleep(10);
         ageField.sendKeys(day);
+        Thread.sleep(10);
         ageField.sendKeys(year);
         titleField.click();
     }
