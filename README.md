@@ -6,5 +6,5 @@
 1) Clon project into IDE; <br/>
 2) Rightclick on <b>testn.xml</b><br/>
 3) Click Run<br/>
-Tests shoulld start</br>
+Tests should start</br>
 Results can be found in console</br>
