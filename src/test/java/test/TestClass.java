@@ -41,7 +41,7 @@ public class TestClass {
 
     @Test(description = "Check Email form for a correctness of an entered data", groups = "form", priority = 1)
     public void emailFieldTest() {
-        resetFields();
+        formPage.resetFields();
         //Check that error message doesn't appear with valid data
         formPage.enterEmail("user_name@domain.com");
         Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed(), false);
@@ -55,12 +55,11 @@ public class TestClass {
 
         formPage.enterEmail(".username@yahoo.com");
         Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed(), true); //test will be failed. Message should be displayed but it isn't
-        resetFields();
     }
 
     @Test(description = "Check Age form for a correctness of an entered data", groups = "form", priority = 2)
     public void ageFieldTest() throws InterruptedException {
-        resetFields();
+        formPage.resetFields();
         //Check that error message doesn't appear with valid data. Valid data should satisfy conditions:
         //only numbers are acceptable, age should starts from 19XX and ends with 20XX, month <12, days<31
         String month = "12", day = "30", year = "2000";
@@ -94,7 +93,7 @@ public class TestClass {
 
     @Test(description = "Check name form for a correctness of an entered data", groups = "form", priority = 3)
     public void nameFieldTest(){
-        resetFields();
+        formPage.resetFields();
         //Check name field for valid data. It shouldn't include special symbols. Text length should be less than 20
         formPage.enterYourNameField("Arley Gilmore");
         Assert.assertEquals(formPage.getErrorMessage(FormPage.FormType.NAME).isDisplayed(), false);
@@ -115,7 +114,7 @@ public class TestClass {
 
     @Test(description = "Verify a correctness of checked options in the Mood form", groups = "form", priority = 4)
     public void moodFieldsTest(){
-        resetFields();
+        formPage.resetFields();
         //Valid data
         //Check 1 selected option; Error message shouldn't be displayed
         formPage.getCheckBoxesList().get(0).click();
@@ -150,7 +149,7 @@ public class TestClass {
 
     @Test(description = "Verify that a data can be sent", groups = "form", priority = 5)
     public void submitDataTest() throws InterruptedException {
-        resetFields();
+        formPage.resetFields();
         //Submit with empty data
         formPage.clickSubmit();
         Assert.assertEquals(true, formPage.getErrorMessage(FormPage.FormType.EMAIL).isDisplayed());
@@ -179,14 +178,6 @@ public class TestClass {
         driver.quit();
     }
 
-    public void resetFields(){
-        formPage.resetCheckBoxes(formPage.getCheckBoxesList());
-        formPage.getAgeField().sendKeys(Keys.DELETE,
-                Keys.ARROW_RIGHT, Keys.DELETE,
-                Keys.ARROW_RIGHT, Keys.DELETE);
-        formPage.getEmailField().clear();
-        formPage.getYourNameField().clear();
-        formPage.getMoodOtherOptionField().clear();
-    }
+
 }
 

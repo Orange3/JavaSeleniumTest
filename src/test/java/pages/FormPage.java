@@ -128,6 +128,15 @@ public class FormPage {
             default: return null;
         }
     }
+    public void resetFields(){
+        resetCheckBoxes(getCheckBoxesList());
+        getAgeField().sendKeys(Keys.DELETE,
+                Keys.ARROW_RIGHT, Keys.DELETE,
+                Keys.ARROW_RIGHT, Keys.DELETE);
+        getEmailField().clear();
+        getYourNameField().clear();
+        getMoodOtherOptionField().clear();
+    }
 
     public WebElement getTitleField() {
         return titleField;
